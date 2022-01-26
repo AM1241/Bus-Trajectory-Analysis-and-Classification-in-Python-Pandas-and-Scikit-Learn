@@ -14,6 +14,7 @@ The algorithms used for that were :
 2) <b>Longest Common Subsequence algorithm</b>, which i implemented.
 
 <b>(a) Data pre-processing </b>
+
 The process of cleaning the track data of the dataset train_set.csv. The whole process is implemented in the datacleaning.py file, while individual useful functionalities called as functions from auxiliaryfunctions.py file.
 First, the log file is readed and all rows with a null value in the JourneyPatternId field are removed. The resulting dataframe is limited to 1,484,821 rows (261,557 rows less than the original).
 A a new field called route is created. It is the concatenated string of VehicleId and timestamp. Based on this a classification is made in order to separate the routes. The result of this transformation is saved in the Sorted.csv file,  and the df reindexing is performed.
