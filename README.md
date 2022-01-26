@@ -13,22 +13,22 @@ The algorithms used for that were :
 1) <b>Fast Dynamic Time Warping (Fast-DTW)</b>, taken from https://github.com/slaypni/fastdtw
 2) <b>Longest Common Subsequence algorithm</b>, which i implemented.
 
-<b>(a) Data pre-processing
+<b>(a) Data pre-processing </b>
 The process of cleaning the track data of the dataset train_set.csv. The whole process is implemented in the datacleaning.py file, while individual useful functionalities called as functions from auxiliaryfunctions.py file.
 First, the log file is readed and all rows with a null value in the JourneyPatternId field are removed. The resulting dataframe is limited to 1,484,821 rows (261,557 rows less than the original).
 A a new field called route is created. It is the concatenated string of VehicleId and timestamp. Based on this a classification is made in order to separate the routes. The result of this transformation is saved in the Sorted.csv file,  and the df reindexing is performed.
 Next, according to the information in the previous file, we get the different trajectories based on the rotation of the JoyrneyPatternId field, merging the timestamp, longitute, latitute into one called timestamp_longitute_latitute, which are stored in the TripId.df file, creating a new dataframe with three columns (TripId, JourneyPatternId, timestamp_longitute_latitute). The df type is chosen because it allows the proper storage of a variety of data structures (eg lists or lists of lists in our case). Each trajectory is identified by its TripId and is located in the timestamp_longitude_latitude field, like a list of (global) points. The number of tracks in the exported TripId file is 7,435.
 
-<b> (b) Data clearance
+<b> (b) Data clearance </b>
 
 In the same datacleaning.py file data cleaning takes place. The distance taken into account each time, was the Havershine distance of the points, which is calculated in a function located in the file auxiliaryfunctions.py. Given an orbit as input (field timestamp_longitude_latitude ) returns a list of two items. In the first element is the total orbital distance calculated by Havershine in kilometers (considering the radius of the Earth 6371km), and in the second element is the largest distance between two points of the orbit. Tracks that either have a total distance of less than 2 km or a longer point distance of more than 2 km are deleted. The final output file is final_cleaned.df.
 Initially there were 7435 tracks in the input file. With the application of the first filter, 193 tracks were removed. By applying the second filter, 858 tracks were removed. There are 6384 tracks in the aforementioned final file.
   
-<b> (c) Data Visualization
+<b> (c) Data Visualization </b>
 
 Finally, in the last part of the datacleaning.py file, the program selects 5 randomly different tracks from the final_cleaned.df file and designs them using the gmplot library. The plot_traj function located in the auxiliaryfunctions.py file implements the design and the final images are saved in the RandomImages folder that is created during the execution of the program.
 
-<b>(d.1) Finding nearest neighbors
+<b>(d.1) Finding nearest neighbors </b>
 
 DTW
 
@@ -36,7 +36,7 @@ The fastdtw package was used for the DTW technique, which is a dtw approach (htt
 Finally, for each trajectory of the test file, all trajectories of the final_cleaned.df file are scanned and all the 'distances' are calculated via fastdtw, using the Havershine distance function used in the previous query.
 To find the 5 nearest neighbors, the distances table containing all distances is sorted (via argsort). Since the distances table is in a 1-1 ratio with our df, the indices of the top5 distances are the indices of the top5 JourneyPatternIDs.
   
-<b>(d.2) Finding nearest neighbors
+<b>(d.2) Finding nearest neighbors </b>
 
 LCSS
 
@@ -49,13 +49,13 @@ The second part of the project was to train KNN,Random Forest, and Logistic Regr
 
 Lastly,the classifiers with the best accuracy were bunched together in the Voting Classifier. The final classifier was used to find labels for the trajectories of the test_set.csv .
   
-<b>(e) Export Features for Categorization
+<b>(e) Export Features for Categorization </b>
 
 To apply the two-dimensional Grid to the coordinates of the paths, in order to represent them as a set of cells, we first locate the point "0.0" of the theoretical Cartesian plane, through the function down_left_point.py which results from the combination of the recommended latitude of the most south point of our set, and the recommended lontitute of the westernmost point of our set.
 This point is (53.070450, -6.61505).
 Then we create the grid_points.py file in which all the points of each path are traversed and after locating them in the Grid (calculating their distance at Haversine from each remote axis) they are replaced by the corresponding Grid cell. The result is exported to the grids.csv file, which consists of two columns (TripId, and Grids). Grids store the entire sequence of cells in the Grid of each path.
   
-<b>(f) Categorization
+<b>(f) Categorization </b>
 
 In the categorization step we used the 3 classifiers given to the pronunciation (Knearest Neigbors, Random Forest and Logistic Regression) from the scikit learn package.
 As for the experiments we did, we first experimented with SVD which is responsible for reducing the dimension of the vectors exported by the vectorizers.
@@ -72,16 +72,12 @@ Random Forest showed a slight improvement while Logistic Regression remained sta
 The most significant improvement in this experiment was Logistc Regression, but in general all classifiers had an improvement in their performance of 1-5%. The only downside here is the time from the 8m36secs of the 4th experiment to 22m6.38secs.
 In the last experiment the estimates for Random Forest became 500 and in Logistic Regression the maximum convergence repetitions became 2000 and now the solver is sag. The improvement in performance is almost non-existent. The time on the other hand increased to 26m26.131secs.
   
-<b>Beat the Benchmark Apó ta parapáno peirámata katalíxame sto sympérasma óti gia to synkekriméno dataset kalýteros taxinomitís ítan o Random Forest akolouthoúmenos apó tous KNN kai Logistic Regression. San teleftaía prospátheia veltíosis tis apódosis apofasísame na chrisimopoiísoume ton Voting Classifier, o opoíos apofásise análoga me tin pleiopsifía ton 3 taxinomitón pou élave ypópsin tou. O prótos ítan o KNN me 5 geítones kai oi álloi dyo ítan Random Forest me 400 kai 500 ektimités antístoicha. I proepexergasía ton dedoménon pou efarmóstike ítan parómoia me ton peiramáton 5 kai 6. O chrónos pou ékane gia 10-fold CrossValidation ítan 32m kai ta apotelésmata faínontai parakáto : Paratíroume óti o m.o. tou accuracy gia ta folds eínai sto 80-82%.
-Εμφάνιση περισσότερων
-757 / 5.000
-Αποτελέσματα μετάφρασης
-Beat the Benchmark
+<b>Beat the Benchmark </b>
 
 From the above experiments we concluded that for this dataset the best classifier was Random Forest followed by KNN and Logistic Regression. As a last resort to improve performance we decided to use the Voting Classifier, which decided according to the majority of the 3 classifiers it took into account. The first was KNN with 5 neighbors and the other two were Random Forest with 400 and 500 appraisers respectively. The pretreatment of the applied data was similar to experiments 5 and 6. The time taken for 10-fold CrossValidation was 32m and the results are shown below:
 We observe that the m.o. of accuracy for folds is at 80-82%. 
   
-Test Set Prediction
+<b>Test Set Prediction </b>
 
 The Python source code is in the test_prediction.py file. It first reads the existing tracks from the test_set.csv file. It then runs the grid function for each of them to generate the cell string. The major drawback that affected our performance is that the test_set cells_strings generated by the grid are short (~ 40-45 cells). So, 'necessarily' the svd could not work with 300 vectors. Therefore we chose the vectors to be of space of 40 dimensions since it is not possible to train our best categorizer (Voting Classifier) in space of 300 dimensions and to examine its forecast in space of 40.
 Therefore, we created two pipelines, the pipeline where he trained the aforementioned Voting Classifier with all the train_set and the pipeline_test which he gave to the categorizer to predict the total trajectories of the test_set. The forecast results can be found in the testSet_JP_IDS.csv file.
