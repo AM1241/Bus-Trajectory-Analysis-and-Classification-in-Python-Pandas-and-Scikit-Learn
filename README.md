@@ -29,6 +29,9 @@ Initially there were 7435 tracks in the input file. With the application of the 
 
 Finally, in the last part of the datacleaning.py file, the program selects 5 randomly different tracks from the final_cleaned.df file and designs them using the gmplot library. The plot_traj function located in the auxiliaryfunctions.py file implements the design and the final images are saved in the RandomImages folder that is created during the execution of the program.
 
+Example:
+![alt text](https://github.com/AM1241/Bus-Trajectory-Analysis-and-Classification-in-Python-Pandas-and-Scikit-Learn/blob/main/images/img1.png?raw=true)
+
 <b>(d.1) Finding nearest neighbors </b>
 
 DTW
