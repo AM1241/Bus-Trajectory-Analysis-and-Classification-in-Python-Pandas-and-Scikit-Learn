@@ -11,7 +11,7 @@ The goal of this project was firstly to compute trajectory similarity between tr
 
 The algorithms used for that were :
 1) <b>Fast Dynamic Time Warping (Fast-DTW)</b>, taken from https://github.com/slaypni/fastdtw
-2) <b>Longest Common Subsequence algorithm</b>, which i implemented.
+2) <b>Longest Common Subsequence algorithm</b>
 
 <b>(a) Data pre-processing </b>
 
