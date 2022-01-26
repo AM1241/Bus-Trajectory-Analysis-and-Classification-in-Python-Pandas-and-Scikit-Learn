@@ -30,6 +30,7 @@ Initially there were 7435 tracks in the input file. With the application of the 
 Finally, in the last part of the datacleaning.py file, the program selects 5 randomly different tracks from the final_cleaned.df file and designs them using the gmplot library. The plot_traj function located in the auxiliaryfunctions.py file implements the design and the final images are saved in the RandomImages folder that is created during the execution of the program.
 
 Example:
+
 ![alt text](https://github.com/AM1241/Bus-Trajectory-Analysis-and-Classification-in-Python-Pandas-and-Scikit-Learn/blob/main/images/img1.png?raw=true)
 
 <b>(d.1) Finding nearest neighbors </b>
@@ -47,7 +48,8 @@ LCSS
 An implementation (https://github.com/maikol-solis/trajectory_distance/blob/master/traj_dist/pydist/lcss.py) of the algorithm found in this link was used for LCSS. The code that implements this query is in the lcss_neigbors.py file. First, read the file created in (a), as well as the test_set_a2.csv file, using regular expressions in python to get the results correctly. Next, the program creates the LCSSresults folder where the images (in html) will be saved by gmplot.
 Finally, for each trajectory of the test file, all trajectories of the final_cleaned.df file are scanned and all common points are calculated via lcss, using the Havershine distance function used in the previous query.
 To find the common points, the distances table containing all distances is sorted (via argsort). Two points will be matched if the distance does not exceed 200m. Thus, the calculation time of the common 5-point points, the JourneyPatternId for each of the neighbors detected, the number of points encountered with each of the 5 neighbors, the visualization of the given path and the visualization of the five nearby in the subdivisions detected in red, and in blue the entire route of the neighbor is shown in the pictures below for each trajectory.
- 
+
+![alt text](https://github.com/AM1241/Bus-Trajectory-Analysis-and-Classification-in-Python-Pandas-and-Scikit-Learn/blob/main/images/img2.png?raw=true)
 
 The second part of the project was to train KNN,Random Forest, and Logistic Regression classifiers and predict the routes of trajectories of the test_set.csv . The first step was to assign each trajectory to a string (composed of cell codes) via a grid representation. In the second step, 10-cross-fold-validation was used to train the classifiers with grid strings of the dataset with accuracy metric . I conducted various experiments, by changing each classifier's parameters. 
 
@@ -58,6 +60,8 @@ Lastly,the classifiers with the best accuracy were bunched together in the Votin
 To apply the two-dimensional Grid to the coordinates of the paths, in order to represent them as a set of cells, we first locate the point "0.0" of the theoretical Cartesian plane, through the function down_left_point.py which results from the combination of the recommended latitude of the most south point of our set, and the recommended lontitute of the westernmost point of our set.
 This point is (53.070450, -6.61505).
 Then we create the grid_points.py file in which all the points of each path are traversed and after locating them in the Grid (calculating their distance at Haversine from each remote axis) they are replaced by the corresponding Grid cell. The result is exported to the grids.csv file, which consists of two columns (TripId, and Grids). Grids store the entire sequence of cells in the Grid of each path.
+
+![alt text](https://github.com/AM1241/Bus-Trajectory-Analysis-and-Classification-in-Python-Pandas-and-Scikit-Learn/blob/main/images/img3.png?raw=true)
   
 <b>(f) Categorization </b>
 
@@ -65,21 +69,36 @@ In the categorization step we used the 3 classifiers given to the pronunciation 
 As for the experiments we did, we first experimented with SVD which is responsible for reducing the dimension of the vectors exported by the vectorizers.
   
 For each experiment performed, the classifytraj.py file generated an EvaluationMetricAccuracy file where the accuracy for each of the 10 folds was kept for each categorizer. Starting with 50 coordinates per orbit, the results we have had are mediocre to disappointing. Especially, in the last fold, the (trained LogisticRegression categorizer) has a yield of only 20%.
+
+![alt text](https://github.com/AM1241/Bus-Trajectory-Analysis-and-Classification-in-Python-Pandas-and-Scikit-Learn/blob/main/images/img4.1.png?raw=true)
+
 Then we performed the same experiment (keeping the default arguments of the classifiers) and increased the dimension of the vectors from 50 to 100. The conclusion was that the accuracy of the classifiers went up 5% -10%. From the first two experiments it seems that Random Forest is the best and Logistic Regression the worst 
+
+![alt text](https://github.com/AM1241/Bus-Trajectory-Analysis-and-Classification-in-Python-Pandas-and-Scikit-Learn/blob/main/images/img4.2.png?raw=true)
 
  In the next two experiments, having a fixed SVD of 100 dimensions, we changed the arguments of the categorizers. More specifically, in the third experiment NN ran examining the 3 closest neighbors, Random Forests with 50 estimators and Logistic Regression with a tolerance of 0.000001 and solver = sag. All classifiers in all experiments ran with n_jobs = -1, using all system cores.
   
-  We observe that the yield of all Random Forest increases by 5% while of the rest from minimal (KNN) to not at all. In the fourth experiment, for KNN we increased the neighbors to 7 for KNN, the estimators to 200 for Random Forest and for the Logistic Regression ton maximum number of iterations for convergence to 500. The most important observation from this experiment is that the performance of the KNN fell making the neighbors 7 out of 3.
+![alt text](https://github.com/AM1241/Bus-Trajectory-Analysis-and-Classification-in-Python-Pandas-and-Scikit-Learn/blob/main/images/img4.3.png?raw=true)
   
+We observe that the yield of all Random Forest increases by 5% while of the rest from minimal (KNN) to not at all. In the fourth experiment, for KNN we increased the neighbors to 7 for KNN, the estimators to 200 for Random Forest and for the Logistic Regression ton maximum number of iterations for convergence to 500. The most important observation from this experiment is that the performance of the KNN fell making the neighbors 7 out of 3.
+
+![alt text](https://github.com/AM1241/Bus-Trajectory-Analysis-and-Classification-in-Python-Pandas-and-Scikit-Learn/blob/main/images/img4.4.png?raw=true)
+
 Random Forest showed a slight improvement while Logistic Regression remained stable and disappointing once again in terms of performance in fold10, which is only 31%. In the last two experiments, the dimension of the vectors is now 300, so that less information is lost as the dimension decreases. The neighbors for KNN are in both experiments 5 the estimators for Random Forest in the 5th experiment are 400 and regarding Logistic Regression the tolerance is 0.0000001, the maximum number of repetitions is 1000 and in this case the solver is lbfgs.
+
+![alt text](https://github.com/AM1241/Bus-Trajectory-Analysis-and-Classification-in-Python-Pandas-and-Scikit-Learn/blob/main/images/img4.5.png?raw=true)
   
 The most significant improvement in this experiment was Logistc Regression, but in general all classifiers had an improvement in their performance of 1-5%. The only downside here is the time from the 8m36secs of the 4th experiment to 22m6.38secs.
 In the last experiment the estimates for Random Forest became 500 and in Logistic Regression the maximum convergence repetitions became 2000 and now the solver is sag. The improvement in performance is almost non-existent. The time on the other hand increased to 26m26.131secs.
+  
+![alt text](https://github.com/AM1241/Bus-Trajectory-Analysis-and-Classification-in-Python-Pandas-and-Scikit-Learn/blob/main/images/img4.6.png?raw=true)
   
 <b>Beat the Benchmark </b>
 
 From the above experiments we concluded that for this dataset the best classifier was Random Forest followed by KNN and Logistic Regression. As a last resort to improve performance we decided to use the Voting Classifier, which decided according to the majority of the 3 classifiers it took into account. The first was KNN with 5 neighbors and the other two were Random Forest with 400 and 500 appraisers respectively. The pretreatment of the applied data was similar to experiments 5 and 6. The time taken for 10-fold CrossValidation was 32m and the results are shown below:
 We observe that the m.o. of accuracy for folds is at 80-82%. 
+
+![alt text](https://github.com/AM1241/Bus-Trajectory-Analysis-and-Classification-in-Python-Pandas-and-Scikit-Learn/blob/main/images/img4.7.png?raw=true)
   
 <b>Test Set Prediction </b>
 
